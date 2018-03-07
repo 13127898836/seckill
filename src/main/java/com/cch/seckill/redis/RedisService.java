@@ -3,6 +3,7 @@ package com.cch.seckill.redis;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -10,13 +11,14 @@ import redis.clients.jedis.JedisPool;
  * Created by 459105408@qq.com
  * 2018-03-03 16:51.
  */
-@Component
+@Service
 public class RedisService {
+
     @Autowired
     JedisPool jedisPool;
 
     /**
-     * 获取单个对象
+     * 获取当个对象
      * */
     public <T> T get(KeyPrefix prefix, String key,  Class<T> clazz) {
         Jedis jedis = null;
@@ -67,6 +69,22 @@ public class RedisService {
             //生成真正的key
             String realKey  = prefix.getPrefix() + key;
             return  jedis.exists(realKey);
+        }finally {
+            returnToPool(jedis);
+        }
+    }
+
+    /**
+     * 删除
+     * */
+    public boolean delete(KeyPrefix prefix, String key) {
+        Jedis jedis = null;
+        try {
+            jedis =  jedisPool.getResource();
+            //生成真正的key
+            String realKey  = prefix.getPrefix() + key;
+            long ret =  jedis.del(key);
+            return ret > 0;
         }finally {
             returnToPool(jedis);
         }
@@ -139,4 +157,5 @@ public class RedisService {
             jedis.close();
         }
     }
+
 }
