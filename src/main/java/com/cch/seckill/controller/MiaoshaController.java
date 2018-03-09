@@ -42,9 +42,9 @@ public class MiaoshaController {
 
     /**
      * 1000*10
-     * QPS:2912
+     * QPS:2912,2450
      * 2000*10
-     * QPS:1740
+     * QPS:1740,1643
      * @param model
      * @param user
      * @param goodsId

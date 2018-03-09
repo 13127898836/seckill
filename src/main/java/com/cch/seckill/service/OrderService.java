@@ -4,6 +4,8 @@ import com.cch.seckill.dao.OrderDao;
 import com.cch.seckill.domain.MiaoshaOrder;
 import com.cch.seckill.domain.MiaoshaUser;
 import com.cch.seckill.domain.OrderInfo;
+import com.cch.seckill.redis.OrderKey;
+import com.cch.seckill.redis.RedisService;
 import com.cch.seckill.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +21,12 @@ import java.util.Date;
 public class OrderService {
     @Autowired
     OrderDao orderDao;
+    @Autowired
+    RedisService redisService;
 
     public MiaoshaOrder getMiaoshaOrderByUserIdGoodsId(long userId, long goodsId) {
-        return orderDao.getMiaoshaOrderByUserIdGoodsId(userId, goodsId);
+        //return orderDao.getMiaoshaOrderByUserIdGoodsId(userId, goodsId);
+        return redisService.get(OrderKey.getMiaoshaOrderByUidGid, ""+userId+"_"+goodsId, MiaoshaOrder.class);
     }
 
     /**
@@ -48,6 +53,7 @@ public class OrderService {
         miaoshaOrder.setOrderId(orderId);
         miaoshaOrder.setUserId(user.getId());
         orderDao.insertMiaoshaOrder(miaoshaOrder);
+        redisService.set(OrderKey.getMiaoshaOrderByUidGid, ""+user.getId()+"_"+goods.getId(), miaoshaOrder);
         return orderInfo;
     }
 }
