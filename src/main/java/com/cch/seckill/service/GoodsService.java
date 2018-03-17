@@ -25,13 +25,20 @@ public class GoodsService {
         return goodsDao.getGoodsVoByGoodsId(goodsId);
     }
 
-    /**
-     * 减少库存
-     * @param goods
-     */
-    public void reduceStock(GoodsVo goods) {
+    public boolean reduceStock(GoodsVo goods) {
         MiaoshaGoods g = new MiaoshaGoods();
         g.setGoodsId(goods.getId());
-        goodsDao.reduceStock(g);
+        int ret = goodsDao.reduceStock(g);
+        return ret > 0;
     }
+
+    public void resetStock(List<GoodsVo> goodsList) {
+        for(GoodsVo goods : goodsList ) {
+            MiaoshaGoods g = new MiaoshaGoods();
+            g.setGoodsId(goods.getId());
+            g.setStockCount(goods.getStockCount());
+            goodsDao.resetStock(g);
+        }
+    }
+
 }
